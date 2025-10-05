@@ -1,0 +1,400 @@
+ :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --accent-color: #28a745;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --border-color: #e0e0e0;
+            --text-color: #333;
+            --light-text-color: #666;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+
+            --weekend-sat-color: #007bff;
+            --weekend-sun-holiday-color: #dc3545;
+            --custom-holiday-color: #fd7e14;
+            --start-end-day-border: #007bff;
+            --start-end-day-bg: #e7f3ff;
+            --class-day-bg: #d4edda;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            background: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #f0f0f0;
+        }
+
+        .dots {
+            display: flex;
+            gap: 6px;
+            margin-right: 15px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background-color: #ff5f56; }
+        .dot.yellow { background-color: #ffbd2e; }
+        .dot.green { background-color: #27c93f; }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .input-panel, .output-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .output-panel {
+            min-width: 500px;
+        }
+
+        .card {
+            background: var(--card-background);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--light-text-color);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .input-field.small {
+            width: 100px;
+        }
+
+        .input-with-unit {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-unit .unit {
+            margin-left: 10px;
+            font-size: 0.9em;
+            color: var(--light-text-color);
+        }
+
+        .button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+
+        .button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .button.primary:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .button.secondary {
+            background-color: var(--secondary-color);
+            color: white;
+            margin-left: 10px;
+        }
+
+        .button.secondary:hover {
+            background-color: #5a6268;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        .holiday-list, .schedule-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .holiday-list li, .schedule-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background-color: #f0f4f7;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        .holiday-list li .delete-btn, .schedule-list li .delete-btn {
+            background: none;
+            border: none;
+            color: var(--weekend-sun-holiday-color);
+            font-size: 1em;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .holiday-list li .delete-btn:hover, .schedule-list li .delete-btn:hover {
+            color: #cc0000;
+        }
+
+        .schedule-list li span {
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        .schedule-list li span:hover {
+            text-decoration: underline;
+        }
+
+        .result-summary p {
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .result-summary p strong {
+            color: var(--text-color);
+            font-weight: 500;
+            width: 120px;
+            display: inline-block;
+        }
+
+        .refresh-icon {
+            float: right;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: var(--secondary-color);
+            transition: transform 0.3s;
+        }
+
+        .refresh-icon:hover {
+            transform: rotate(30deg);
+        }
+
+        .calendar-view {
+            padding: 15px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-header h3 {
+            margin: 0;
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+
+        .nav-button {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: var(--light-text-color);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .nav-button:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .day-header {
+            font-weight: 500;
+            color: var(--text-color);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 5px;
+        }
+
+        .calendar-day {
+            padding: 8px 5px;
+            border-radius: 4px;
+            position: relative;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+
+        .calendar-day .date-num {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .calendar-day.empty {
+            visibility: hidden;
+        }
+
+        .calendar-day.weekend.saturday {
+            color: var(--weekend-sat-color);
+        }
+
+        .calendar-day.weekend.sunday,
+        .calendar-day.holiday {
+            color: var(--weekend-sun-holiday-color);
+        }
+
+        .calendar-day.custom-holiday {
+            color: var(--custom-holiday-color);
+            background-color: rgba(253, 126, 20, 0.1);
+        }
+
+        .calendar-day.class-day {
+            background-color: var(--class-day-bg);
+            font-weight: 600;
+        }
+
+        .calendar-day.start-end-day {
+            border: 2px solid var(--start-end-day-border);
+            background-color: var(--start-end-day-bg);
+            font-weight: 700;
+        }
+
+        .calendar-day .holiday-name {
+            font-size: 0.7em;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .calendar-legend {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            font-size: 0.85em;
+            color: var(--light-text-color);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            margin-right: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        .legend-color.class-day { 
+            background-color: var(--class-day-bg); 
+            border-color: var(--accent-color); 
+        }
+        .legend-color.weekend { 
+            background-color: var(--weekend-sat-color); 
+            border-color: var(--weekend-sat-color); 
+        }
+        .legend-color.holiday { 
+            background-color: var(--weekend-sun-holiday-color); 
+            border-color: var(--weekend-sun-holiday-color); 
+        }
+        .legend-color.custom-holiday { 
+            background-color: var(--custom-holiday-color); 
+            border-color: var(--custom-holiday-color); 
+        }
+        .legend-color.start-end-day { 
+            background-color: var(--start-end-day-bg); 
+            border-color: var(--start-end-day-border); 
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            .input-panel, .output-panel {
+                width: 100%;
+                min-width: unset;
+            }
+        }
