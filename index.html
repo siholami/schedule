@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수업 일정 계산기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        /* 추가 휴강 스타일 */
+        #customHolidaysList {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .custom-holiday-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed #e9ecef;
+            font-size: 14px;
+        }
+
+        .custom-holiday-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-holiday-item button {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 5px;
+            line-height: 1;
+        }
+
+        .result-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-section h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-item label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .result-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 4) 수정: 캘린더 섹션의 높이 제한 및 스크롤 제거 (전체 페이지 스크롤 사용) */
+        .calendar-section {
+            /* overflow-y: auto; */
+            /* max-height: 800px; */
+            padding: 10px; /* 가독성을 위해 패딩 추가 */
+        }
+
+        .calendar-month {
+            margin-bottom: 30px;
+        }
+
+        .calendar-month h4 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-weight: 600;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .calendar-header.sat {
+            color: #0066cc;
+        }
+
+        .calendar-header.sun {
+            color: #dc3545;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 5px;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .calendar-day.empty {
+            border: none;
+        }
+
+        .calendar-day.weekend {
+            background: #f0f0f0;
+        }
+
+        .calendar-day.sat {
+            color: #0066cc;
+        }
+
+        .calendar-day.sun, .calendar-day.holiday {
+            color: #dc3545;
+        }
+
+        .calendar-day.class-day {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-day.start-day {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-day.end-day {
+            background: #dc3545;
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-day.custom-holiday {
+            background: #ffc107;
+        }
+
+        .holiday-name {
+            font-size: 9px;
+            text-align: center;
+            margin-top: 2px;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+
+        .saved-courses {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .saved-courses h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .course-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid #667eea;
+        }
+
+        .course-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-item h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .course-item p {
+            font-size: 12px;
+            color: #666;
+            margin: 3px 0;
+        }
+
+        .course-item button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 1200px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 수업 일정 계산기</h1>
+            <p>주말과 공휴일을 제외한 정확한 수업 종료일을 계산합니다</p>
+        </div>
+
+        <div class="content">
+            <div>
+                <div class="input-section">
+                    <h3 style="margin-bottom: 20px;">일정 설정</h3>
+                    
+                    <div class="input-group">
+                        <label>과정명</label>
+                        <input type="text" id="courseName" placeholder="예: 웹개발 기초과정">
+                    </div>
+
+                    <div class="input-group">
+                        <label>시작 날짜</label>
+                        <input type="date" id="startDate">
+                    </div>
+
+                    <div class="input-group">
+                        <label>1일 수업시간 (시간)</label>
+                        <input type="number" id="dailyHours" min="1" max="24" value="8">
+                    </div>
+
+                    <div class="input-group">
+                        <label>총 수업시간 (시간)</label>
+                        <input type="number" id="totalHours" min="1" value="100">
+                    </div>
+
+                    <div class="input-group">
+                        <label>추가 휴강 (주말/공휴일 외)</label>
+                        <input type="date" id="newCustomHolidayDate" style="margin-bottom: 5px;">
+                        <input type="text" id="newCustomHolidayName" placeholder="일정명 (예: 워크숍)">
+                        <button class="btn btn-secondary" onclick="addCustomHoliday()" style="margin-top: 10px; padding: 10px; width: auto;">추가</button>
+                    </div>
+
+                    <div id="customHolidaysList">
+                        </div>
+
+
+                    <button class="btn btn-primary" onclick="calculate()">계산하기</button>
+                    <button class="btn btn-success" onclick="saveCourse()">과정 저장하기</button>
+                    <button class="btn btn-secondary" onclick="clearForm()">초기화</button>
+                </div>
+
+                <div class="saved-courses" id="savedCourses" style="display: none;">
+                    <h3>저장된 과정</h3>
+                    <div id="coursesList"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="result-section" id="resultSection" style="display: none;">
+                    <h3>📊 계산 결과</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <label>시작일</label>
+                            <div class="value" id="resultStartDate">-</div>
+                        </div>
+                        <div class="result-item">
+                            <label>종료일</label>
+                            <div class="value" id="resultEndDate">-</div>
+                        </div>
+                        <div class="result-item">
+                            <label>전체 기간</label>
+                            <div class="value" id="resultTotalDays">-</div>
+                        </div>
+                        <div class="result-item">
+                            <label>실제 수업일</label>
+                            <div class="value" id="resultClassDays">-</div>
+                        </div>
+                        <div class="result-item">
+                            <label>제외된 주말</label>
+                            <div class="value" id="resultWeekends">-</div>
+                        </div>
+                        <div class="result-item">
+                            <label>제외된 공휴일</label>
+                            <div class="value" id="resultHolidays">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend" id="legend" style="display: none;">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #28a745;"></div>
+                        <span>시작일</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dc3545;"></div>
+                        <span>종료일</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        <span>수업일</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffc107;"></div>
+                        <span>추가 휴강</span>
+                    </div>
+                </div>
+
+                <div class="calendar-section" id="calendarSection"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 3) course_holliday.js의 officialHolidays 객체를 통합하여 사용
+        const officialHolidays = {
+            '2025-01-01': '신정',
+            '2025-01-28': '설날 연휴',
+            '2025-01-29': '설날',
+            '2025-01-30': '설날 연휴',
+            '2025-03-01': '3·1절',
+            '2025-05-05': '어린이날',
+            '2025-05-06': '부처님오신날 (대체공휴일)',
+            '2025-06-06': '현충일',
+            '2025-08-15': '광복절',
+            '2025-10-03': '개천절',
+            '2025-10-06': '추석 연휴',
+            '2025-10-07': '추석',
+            '2025-10-08': '추석 연휴',
+            '2025-10-09': '한글날',
+            '2025-12-25': '크리스마스',
+            '2026-01-01': '신정',
+            '2026-02-16': '설날 연휴',
+            '2026-02-17': '설날',
+            '2026-02-18': '설날 연휴',
+            '2026-03-01': '3·1절',
+            '2026-03-02': '3·1절 (대체공휴일)',
+            '2026-05-05': '어린이날',
+            '2026-05-25': '부처님오신날',
+            '2026-06-06': '현충일',
+            '2026-08-15': '광복절',
+            '2026-08-17': '광복절 (대체공휴일)',
+            '2026-09-24': '추석 연휴',
+            '2026-09-25': '추석',
+            '2026-09-26': '추석 연휴',
+            '2026-09-28': '추석 연휴 (대체공휴일)',
+            '2026-10-03': '개천절',
+            '2026-10-05': '개천절 (대체공휴일)',
+            '2026-10-09': '한글날',
+            '2026-12-25': '크리스마스',
+            '2027-01-01': '신정',
+            '2027-02-05': '설날 연휴',
+            '2027-02-06': '설날',
+            '2027-02-07': '설날 연휴',
+            '2027-02-08': '설날 (대체공휴일)',
+            '2027-02-09': '설날 연휴 (대체공휴일)',
+            '2027-03-01': '3·1절',
+            '2027-05-05': '어린이날',
+            '2027-05-14': '부처님오신날',
+            '2027-06-06': '현충일',
+            '2027-08-15': '광복절',
+            '2027-08-16': '광복절 (대체공휴일)',
+            '2027-09-14': '추석 연휴',
+            '2027-09-15': '추석',
+            '2027-09-16': '추석 연휴',
+            '2027-10-03': '개천절',
+            '2027-10-04': '개천절 (대체공휴일)',
+            '2027-10-09': '한글날',
+            '2027-10-11': '한글날 (대체공휴일)',
+            '2027-12-25': '크리스마스',
+            '2028-01-01': '신정',
+            '2028-01-25': '설날 연휴',
+            '2028-01-26': '설날',
+            '2028-01-27': '설날 연휴',
+            '2028-03-01': '3·1절',
+            '2028-05-05': '어린이날',
+            '2028-05-02': '부처님오신날',
+            '2028-06-06': '현충일',
+            '2028-08-15': '광복절',
+            '2028-09-30': '추석 연휴',
+            '2028-10-01': '추석',
+            '2028-10-02': '추석 연휴',
+            '2028-10-03': '개천절',
+            '2028-10-04': '추석 연휴 (대체공휴일)',
+            '2028-10-05': '추석 (대체공휴일)',
+            '2028-10-09': '한글날',
+            '2028-12-25': '크리스마스',
+            '2029-01-01': '신정',
+            '2029-02-12': '설날 연휴',
+            '2029-02-13': '설날',
+            '2029-02-14': '설날 연휴',
+            '2029-03-01': '3·1절',
+            '2029-05-05': '어린이날',
+            '2029-05-07': '어린이날 (대체공휴일)',
+            '2029-05-21': '부처님오신날',
+            '2029-06-06': '현충일',
+            '2029-08-15': '광복절',
+            '2029-09-19': '추석 연휴',
+            '2029-09-20': '추석',
+            '2029-09-21': '추석 연휴',
+            '2029-10-03': '개천절',
+            '2029-10-09': '한글날',
+            '2029-12-25': '크리스마스',
+            '2030-01-01': '신정',
+            '2030-02-02': '설날 연휴',
+            '2030-02-03': '설날',
+            '2030-02-04': '설날 연휴',
+            '2030-02-05': '설날 연휴 (대체공휴일)',
+            '2030-02-06': '설날 (대체공휴일)',
+            '2030-03-01': '3·1절',
+            '2030-05-05': '어린이날',
+            '2030-05-06': '어린이날 (대체공휴일)',
+            '2030-05-10': '부처님오신날',
+            '2030-06-06': '현충일',
+            '2030-08-15': '광복절',
+            '2030-09-08': '추석 연휴',
+            '2030-09-09': '추석',
+            '2030-09-10': '추석 연휴',
+            '2030-09-11': '추석 연휴 (대체공휴일)',
+            '2030-10-03': '개천절',
+            '2030-10-09': '한글날',
+            '2030-12-25': '크리스마스',
+            '2031-01-01': '신정',
+            '2031-01-21': '설날 연휴',
+            '2031-01-22': '설날',
+            '2031-01-23': '설날 연휴',
+            '2031-03-01': '3·1절',
+            '2031-03-03': '3·1절 (대체공휴일)',
+            '2031-05-05': '어린이날',
+            '2031-04-29': '부처님오신날',
+            '2031-06-06': '현충일',
+            '2031-08-15': '광복절',
+            '2031-09-29': '추석 연휴',
+            '2031-09-30': '추석',
+            '2031-10-01': '추석 연휴',
+            '2031-10-03': '개천절',
+            '2031-10-09': '한글날',
+            '2031-12-25': '크리스마스',
+            '2032-01-01': '신정',
+            '2032-02-09': '설날 연휴',
+            '2032-02-10': '설날',
+            '2032-02-11': '설날 연휴',
+            '2032-03-01': '3·1절',
+            '2032-05-05': '어린이날',
+            '2032-05-17': '부처님오신날',
+            '2032-06-06': '현충일',
+            '2032-08-15': '광복절',
+            '2032-08-16': '광복절 (대체공휴일)',
+            '2032-09-17': '추석 연휴',
+            '2032-09-18': '추석',
+            '2032-09-19': '추석 연휴',
+            '2032-09-20': '추석 연휴 (대체공휴일)',
+            '2032-09-21': '추석 연휴 (대체공휴일)',
+            '2032-10-03': '개천절',
+            '2032-10-04': '개천절 (대체공휴일)',
+            '2032-10-09': '한글날',
+            '2032-10-11': '한글날 (대체공휴일)',
+            '2032-12-25': '크리스마스',
+            '2033-01-01': '신정',
+            '2033-01-29': '설날 연휴',
+            '2033-01-30': '설날',
+            '2033-01-31': '설날 연휴',
+            '2033-02-01': '설날 연휴 (대체공휴일)',
+            '2033-02-02': '설날 (대체공휴일)',
+            '2033-03-01': '3·1절',
+            '2033-05-05': '어린이날',
+            '2033-05-06': '부처님오신날',
+            '2033-06-06': '현충일',
+            '2033-08-15': '광복절',
+            '2033-10-06': '추석 연휴',
+            '2033-10-07': '추석',
+            '2033-10-08': '추석 연휴',
+            '2033-10-03': '개천절',
+            '2033-10-09': '한글날',
+            '2033-10-11': '추석 연휴 (대체공휴일)',
+            '2033-10-12': '한글날 (대체공휴일)',
+            '2033-12-25': '크리스마스',
+            '2034-01-01': '신정',
+            '2034-01-02': '신정 (대체공휴일)',
+            '2034-02-18': '설날 연휴',
+            '2034-02-19': '설날',
+            '2034-02-20': '설날 연휴',
+            '2034-02-21': '설날 연휴 (대체공휴일)',
+            '2034-03-01': '3·1절',
+            '2034-05-05': '어린이날',
+            '2034-05-26': '부처님오신날',
+            '2034-06-06': '현충일',
+            '2034-08-15': '광복절',
+            '2034-09-25': '추석 연휴',
+            '2034-09-26': '추석',
+            '2034-09-27': '추석 연휴',
+            '2034-10-03': '개천절',
+            '2034-10-09': '한글날',
+            '2034-12-25': '크리스마스',
+            '2035-01-01': '신정',
+            '2035-01-02': '신정 (대체공휴일)',
+            '2035-02-06': '설날 연휴',
+            '2035-02-07': '설날',
+            '2035-02-08': '설날 연휴',
+            '2035-03-01': '3·1절',
+            '2035-05-05': '어린이날',
+            '2035-05-07': '어린이날 (대체공휴일)',
+            '2035-05-15': '부처님오신날',
+            '2035-06-06': '현충일',
+            '2035-08-15': '광복절',
+            '2035-09-13': '추석 연휴',
+            '2035-09-14': '추석',
+            '2035-09-15': '추석 연휴',
+            '2035-09-16': '추석 연휴 (대체공휴일)',
+            '2035-10-03': '개천절',
+            '2035-10-09': '한글날',
+            '2035-12-25': '크리스마스'
+        };
+
+        // 1), 2) 추가 휴강 데이터를 배열 of Object로 관리
+        let customHolidays = loadCustomHolidays(); // [{date: '2025-03-15', name: '워크숍'}]
+        let savedCourses = loadSavedCourses();
+
+        function loadCustomHolidays() {
+            const saved = localStorage.getItem('customHolidays');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveCustomHolidays() {
+            localStorage.setItem('customHolidays', JSON.stringify(customHolidays));
+            displayCustomHolidays();
+        }
+
+        function loadSavedCourses() {
+            const saved = localStorage.getItem('savedCourses');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveCourseToStorage() {
+            localStorage.setItem('savedCourses', JSON.stringify(savedCourses));
+        }
+
+        // 1) 추가 휴강 목록 표시 함수
+        function displayCustomHolidays() {
+            const list = document.getElementById('customHolidaysList');
+            list.innerHTML = '';
+            
+            customHolidays.sort((a, b) => a.date.localeCompare(b.date));
+
+            customHolidays.forEach((holiday, index) => {
+                const item = document.createElement('div');
+                item.className = 'custom-holiday-item';
+                item.innerHTML = `
+                    <span>${holiday.date} (${holiday.name})</span>
+                    <button onclick="removeCustomHoliday(${index})">x</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // 1) 추가 휴강 추가 함수
+        function addCustomHoliday() {
+            const dateInput = document.getElementById('newCustomHolidayDate').value;
+            const nameInput = document.getElementById('newCustomHolidayName').value.trim() || '추가 휴강';
+
+            if (!dateInput) {
+                alert('휴강 날짜를 선택해주세요.');
+                return;
+            }
+
+            const dateStr = dateInput;
+
+            if (customHolidays.some(h => h.date === dateStr)) {
+                alert('이미 등록된 휴강 날짜입니다.');
+                return;
+            }
+            
+            // 공휴일과 겹치는지 확인 (선택 사항이지만 중복 방지를 위해)
+            if (officialHolidays[dateStr]) {
+                 if (!confirm(`선택한 날짜(${dateStr})는 이미 공휴일(${officialHolidays[dateStr]})입니다. 그래도 추가하시겠습니까?`)) {
+                    return;
+                }
+            }
+
+            customHolidays.push({ date: dateStr, name: nameInput });
+            saveCustomHolidays();
+            document.getElementById('newCustomHolidayDate').value = '';
+            document.getElementById('newCustomHolidayName').value = '';
+        }
+
+        // 1) 추가 휴강 삭제 함수
+        function removeCustomHoliday(index) {
+            customHolidays.splice(index, 1);
+            saveCustomHolidays();
+        }
+
+
+        function displaySavedCourses() {
+            const container = document.getElementById('savedCourses');
+            const list = document.getElementById('coursesList');
+            
+            if (savedCourses.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            list.innerHTML = '';
+
+            savedCourses.forEach((course, index) => {
+                const item = document.createElement('div');
+                item.className = 'course-item';
+                item.innerHTML = `
+                    <h4>${course.name}</h4>
+                    <p>📅 ${course.startDate} ~ ${course.endDate}</p>
+                    <p>⏰ 1일 ${course.dailyHours}시간 × ${course.classDays}일 = 총 ${course.totalHours}시간</p>
+                    <button onclick="deleteCourse(event, ${index})">삭제</button>
+                    <button onclick="loadCourse(event, ${index})" style="background: #667eea; margin-left: 5px;">불러오기</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function deleteCourse(event, index) {
+            event.stopPropagation(); // 버튼 클릭 시 부모 요소의 클릭 이벤트 방지
+            if (confirm('이 과정을 삭제하시겠습니까?')) {
+                savedCourses.splice(index, 1);
+                saveCourseToStorage();
+                displaySavedCourses();
+            }
+        }
+
+        // 2) 과정 불러오기 수정: 추가 휴강도 함께 불러오기
+        function loadCourse(event, index) {
+            event.stopPropagation(); // 버튼 클릭 시 부모 요소의 클릭 이벤트 방지
+            const course = savedCourses[index];
+            document.getElementById('courseName').value = course.name;
+            document.getElementById('startDate').value = course.startDate;
+            document.getElementById('dailyHours').value = course.dailyHours;
+            document.getElementById('totalHours').value = course.totalHours;
+
+            // 추가 휴강 불러오기
+            customHolidays = course.customHolidays || [];
+            saveCustomHolidays(); // 로컬 스토리지에 저장 및 표시 업데이트
+            
+            calculate();
+        }
+
+        function isWeekend(date) {
+            const day = date.getDay();
+            return day === 0 || day === 6;
+        }
+
+        // 3) 공휴일 체크 함수 수정: officialHolidays와 customHolidays 모두 확인
+        function isHoliday(dateStr) {
+            return officialHolidays[dateStr] || customHolidays.some(h => h.date === dateStr);
+        }
+
+        // 3) 공휴일 이름 가져오는 함수 수정
+        function getHolidayName(dateStr) {
+            if (officialHolidays[dateStr]) return officialHolidays[dateStr];
+            const customHoliday = customHolidays.find(h => h.date === dateStr);
+            if (customHoliday) return customHoliday.name;
+            return null;
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function calculate() {
+            const startDateInput = document.getElementById('startDate').value;
+            const dailyHours = parseInt(document.getElementById('dailyHours').value);
+            const totalHours = parseInt(document.getElementById('totalHours').value);
+
+            if (!startDateInput || !dailyHours || !totalHours) {
+                alert('모든 필수 항목을 입력해주세요.');
+                return;
+            }
+
+            const requiredDays = Math.ceil(totalHours / dailyHours);
+            let currentDate = new Date(startDateInput);
+            
+            // 날짜를 하루씩 증가시켜 시작일도 포함되도록 조정
+            currentDate.setDate(currentDate.getDate()); 
+
+            let classDaysCount = 0;
+            let weekendCount = 0;
+            let holidayCount = 0;
+            const classDates = [];
+            
+            const maxDaysCheck = 365 * 10; // 무한 루프 방지 (최대 10년)
+            let iterationCount = 0;
+
+
+            while (classDaysCount < requiredDays) {
+                if (iterationCount > maxDaysCheck) {
+                    alert('계산에 너무 오랜 시간이 걸립니다. 입력값을 확인해주세요.');
+                    return;
+                }
+                
+                const dateStr = formatDate(currentDate);
+                const isWE = isWeekend(currentDate);
+                const isH = isHoliday(dateStr);
+                
+                // 오늘 날짜가 시작일이면서 수업 일정을 잡아야 하는 날인 경우
+                if (classDates.length === 0 && dateStr === startDateInput) {
+                    if (!isWE && !isH) {
+                         classDates.push(new Date(currentDate));
+                         classDaysCount++;
+                    } else {
+                        // 시작일이 주말/공휴일인 경우, 다음 날짜로 넘어감.
+                        if (isWE) weekendCount++;
+                        if (isH) holidayCount++;
+                    }
+                } else if (classDates.length > 0 || dateStr !== startDateInput) {
+                    if (!isWE && !isH) {
+                        classDates.push(new Date(currentDate));
+                        classDaysCount++;
+                    } else {
+                        if (isWE) weekendCount++;
+                        if (isH) holidayCount++;
+                    }
+                }
+                
+                // 다음 날짜로 이동
+                currentDate.setDate(currentDate.getDate() + 1);
+                iterationCount++;
+            }
+
+            const startDate = new Date(startDateInput);
+            const endDate = classDates[classDates.length - 1];
+            const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            // 결과 표시
+            document.getElementById('resultStartDate').textContent = formatDate(startDate);
+            document.getElementById('resultEndDate').textContent = formatDate(endDate);
+            document.getElementById('resultTotalDays').textContent = `${totalDays}일`;
+            document.getElementById('resultClassDays').textContent = `${classDaysCount}일`;
+            // 주말/공휴일 카운트는 수업 시작일 *이후*에 계산된 횟수만 포함해야 하므로,
+            // 현재의 `weekendCount`와 `holidayCount`는 계산 시작일(startDateInput)부터 종료일(endDate)까지의 총 제외 일수입니다.
+            document.getElementById('resultWeekends').textContent = `${weekendCount}일`;
+            document.getElementById('resultHolidays').textContent = `${holidayCount}일`;
+
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('legend').style.display = 'flex';
+
+            // 4) 달력 생성
+            generateCalendar(startDate, endDate, classDates);
+        }
+
+        // 4) 달력 생성 함수 (스크롤 div 유지)
+        function generateCalendar(startDate, endDate, classDates) {
+            const calendarSection = document.getElementById('calendarSection');
+            calendarSection.innerHTML = '';
+
+            const classDateStrs = classDates.map(d => formatDate(d));
+            const startDateStr = formatDate(startDate);
+            const endDateStr = formatDate(endDate);
+
+            let currentMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+            const lastMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+
+            while (currentMonth <= lastMonth) {
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'calendar-month';
+
+                const monthTitle = document.createElement('h4');
+                monthTitle.textContent = `${currentMonth.getFullYear()}년 ${currentMonth.getMonth() + 1}월`;
+                monthDiv.appendChild(monthTitle);
+
+                const calendarGrid = document.createElement('div');
+                calendarGrid.className = 'calendar-grid';
+
+                // 요일 헤더
+                const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+                weekdays.forEach((day, index) => {
+                    const header = document.createElement('div');
+                    header.className = 'calendar-header';
+                    if (index === 0) header.classList.add('sun');
+                    if (index === 6) header.classList.add('sat');
+                    header.textContent = day;
+                    calendarGrid.appendChild(header);
+                });
+
+                // 첫째 날의 요일
+                const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+                
+                // 빈 칸
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.className = 'calendar-day empty';
+                    calendarGrid.appendChild(emptyDiv);
+                }
+
+                // 날짜들
+                const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+                    const dateStr = formatDate(date);
+                    const dayOfWeek = date.getDay();
+
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'calendar-day';
+
+                    if (dayOfWeek === 0) dayDiv.classList.add('sun');
+                    if (dayOfWeek === 6) dayDiv.classList.add('sat');
+                    if (isWeekend(date)) dayDiv.classList.add('weekend');
+
+                    if (dateStr === startDateStr) {
+                        dayDiv.classList.add('start-day');
+                    } else if (dateStr === endDateStr) {
+                        dayDiv.classList.add('end-day');
+                    } else if (classDateStrs.includes(dateStr)) {
+                        dayDiv.classList.add('class-day');
+                    }
+
+                    const holidayName = getHolidayName(dateStr);
+                    if (holidayName) {
+                        dayDiv.classList.add('holiday');
+                        if (customHolidays.some(h => h.date === dateStr)) {
+                            dayDiv.classList.add('custom-holiday');
+                        }
+                    }
+
+                    dayDiv.innerHTML = `
+                        <div>${day}</div>
+                        ${holidayName ? `<div class="holiday-name">${holidayName}</div>` : ''}
+                    `;
+
+                    calendarGrid.appendChild(dayDiv);
+                }
+
+                monthDiv.appendChild(calendarGrid);
+                calendarSection.appendChild(monthDiv);
+
+                currentMonth.setMonth(currentMonth.getMonth() + 1);
+            }
+        }
+
+        // 2) 과정 저장 함수 수정: 추가 휴강 목록 저장
+        function saveCourse() {
+            const courseName = document.getElementById('courseName').value;
+            const startDate = document.getElementById('startDate').value;
+            const dailyHours = document.getElementById('dailyHours').value;
+            const totalHours = document.getElementById('totalHours').value;
+            const resultEndDate = document.getElementById('resultEndDate').textContent;
+            const resultClassDays = document.getElementById('resultClassDays').textContent;
+
+            if (!courseName || !startDate || resultEndDate === '-') {
+                alert('과정명을 입력하고 먼저 계산을 수행해주세요.');
+                return;
+            }
+
+            const course = {
+                name: courseName,
+                startDate: startDate,
+                endDate: resultEndDate,
+                dailyHours: dailyHours,
+                totalHours: totalHours,
+                classDays: resultClassDays.replace('일', ''),
+                customHolidays: [...customHolidays] // 현재 customHolidays 상태를 복사하여 저장
+            };
+
+            savedCourses.push(course);
+            saveCourseToStorage();
+            displaySavedCourses();
+            alert('과정이 저장되었습니다!');
+        }
+
+        function clearForm() {
+            document.getElementById('courseName').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('dailyHours').value = '8';
+            document.getElementById('totalHours').value = '100';
+            document.getElementById('newCustomHolidayDate').value = '';
+            document.getElementById('newCustomHolidayName').value = '';
+            
+            // 추가 휴강 목록 초기화
+            customHolidays = [];
+            saveCustomHolidays();
+
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('legend').style.display = 'none';
+            document.getElementById('calendarSection').innerHTML = '';
+        }
+
+        // 초기화 및 로딩 시 함수 실행
+        window.onload = function() {
+            displaySavedCourses();
+            displayCustomHolidays();
+            // 오늘 날짜를 기본값으로 설정
+            const today = new Date();
+            document.getElementById('startDate').value = formatDate(today);
+        };
+    </script>
+</body>
+</html>
